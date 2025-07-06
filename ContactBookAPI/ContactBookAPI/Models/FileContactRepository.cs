@@ -17,9 +17,21 @@ namespace ContactBookAPI.Models
                 File.WriteAllText(_filePath, contactsJSON);
             }
 
-        public void DeleteContact(string id)
+        public bool DeleteContact(string id)
         {
-            throw new NotImplementedException();
+            var contacts = GetContacts();
+            var contactToDelete = contacts.Find(c => c.Id == id);
+            if (contactToDelete is not null)
+            {
+                contacts.Remove(contactToDelete);
+                var contactsJSON = JsonSerializer.Serialize(contacts, prettyPrint);
+                File.WriteAllText(_filePath, contactsJSON);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         public List<Contact> GetContacts()

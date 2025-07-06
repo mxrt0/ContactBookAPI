@@ -29,7 +29,7 @@ namespace ContactBookAPI.Controllers
             return Ok();
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("update/{id}")]
         public IActionResult UpdateContact(string id, [FromBody] Contact updatedContact)
         {
             if (!_repo.UpdateContact(id, updatedContact))
@@ -37,6 +37,19 @@ namespace ContactBookAPI.Controllers
                 return NotFound();
             }
             return Ok(updatedContact);
+        }
+
+        [HttpDelete("delete/{id}")]
+        public IActionResult DeleteContact(string id)
+        {
+            if (_repo.DeleteContact(id))
+            {
+                return Ok();
+            }
+            else
+            {
+                return NotFound();
+            }
         }
 
 

@@ -70,6 +70,11 @@ async function loadContacts() {
             saveBtn.textContent = 'Save';
             saveBtn.style.display = 'none';
 
+            const deleteBtn = document.createElement('button');
+            deleteBtn.classList.add('delete-btn');
+            deleteBtn.textContent = 'Delete';
+            li.appendChild(deleteBtn);
+
             // Append all to li
             li.appendChild(nameSpan);
             li.appendChild(document.createTextNode(' | '));  // separator
@@ -95,8 +100,15 @@ async function loadContacts() {
             await saveContact(li);
             toggleEdit(li, false);
         }
-        });
-        
+
+        if (target.classList.contains('delete-btn')) {
+            const li = target.closest('li');
+            const id = li.getAttribute('data-id');
+            if (confirm("Are you sure you want to delete this contact?")) {
+                await deleteContact(id);
+            }
+        }
+        });   
     }
     catch (error) {
         console.error("Error loading contacts: ", error);
@@ -167,7 +179,7 @@ async function saveContact(li) {
   const updatedContact = { name, email, phone };
 
   try {
-    const response = await fetch(`/contacts/${id}`, {
+    const response = await fetch(`/contacts/update/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updatedContact),
@@ -176,15 +188,31 @@ async function saveContact(li) {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    if (response.status !== 204) {
-        const data = await response.json();
-        console.log('Updated contact:', data);
-        } else {
-        console.log('Contact updated (204 No Content)');
-    }
-    console.log('Contact updated successfully');
+    const updated = await response.json();
+    console.log('Contact updated successfully:', updated);
   } catch (error) {
     console.error('Failed to update contact:', error);
     alert('Failed to update contact. Please try again.');
   }
 }
+
+async function deleteContact(id) {
+    try {
+        const response = await fetch(`/contacts/delete/${id}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            const li = document.querySelector(`li[data-id="${id}"]`);
+            if (li) li.remove();
+            console.log("Contact deleted successfully.");
+        } 
+        else {
+            console.log("Failed to delete contact.");
+        }
+    } 
+    catch (error) {
+        console.error('Error deleting contact:', error);
+        alert("An error occurred while deleting the contact.");
+    }        
+}   
