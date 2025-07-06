@@ -4,5 +4,7 @@
     {
         List<Contact> GetContacts();
         void AddContact(Contact contact);
+        bool UpdateContact(string id, Contact updatedContact);
+        void DeleteContact(string id);
     }
 }

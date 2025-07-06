@@ -6,16 +6,23 @@ namespace ContactBookAPI.Models
         public class FileContactRepository : IContactRepository
         {
             private readonly string _filePath = "contacts.json";
-            public void AddContact(Contact contact)
+            private JsonSerializerOptions prettyPrint = new JsonSerializerOptions { WriteIndented = true };
+        public void AddContact(Contact contact)
             {
                 var contacts = GetContacts();
+                
                 contacts.Add(contact);
-                var prettyPrint = new JsonSerializerOptions { WriteIndented = true };
+                
                 var contactsJSON = JsonSerializer.Serialize(contacts, prettyPrint);
                 File.WriteAllText(_filePath, contactsJSON);
             }
 
-            public List<Contact> GetContacts()
+        public void DeleteContact(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<Contact> GetContacts()
             {
                 if (!File.Exists(_filePath))
                 {
@@ -25,5 +32,25 @@ namespace ContactBookAPI.Models
                 var contactsJSON = File.ReadAllText(_filePath);
                 return JsonSerializer.Deserialize<List<Contact>>(contactsJSON) ?? new List<Contact>();
             }
+
+        public bool UpdateContact(string id, Contact updatedContact)
+        {
+            var contacts = GetContacts();
+            var contactToUpdate = contacts.Find(c => c.Id == id);
+            if (contactToUpdate is not null)
+            {
+                contactToUpdate.Name = updatedContact.Name;
+                contactToUpdate.Email = updatedContact.Email;
+                contactToUpdate.Phone = updatedContact.Phone;
+                var contactsJSON = JsonSerializer.Serialize(contacts, prettyPrint);
+                File.WriteAllText(_filePath, contactsJSON);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            
         }
+    }
 }

@@ -23,10 +23,20 @@ namespace ContactBookAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddContact([FromBody] Contact newContact)
-        {
-            _repo.AddContact(newContact);
+        public IActionResult AddContact([FromBody] Contact contact)
+        {   
+            _repo.AddContact(contact);
             return Ok();
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateContact(string id, [FromBody] Contact updatedContact)
+        {
+            if (!_repo.UpdateContact(id, updatedContact))
+            {
+                return NotFound();
+            }
+            return Ok(updatedContact);
         }
 
 
