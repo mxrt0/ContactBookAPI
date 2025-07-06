@@ -1,0 +1,6 @@
+@ContactBookAPI_HostAddress = http://localhost:5078
+
+GET {{ContactBookAPI_HostAddress}}/contacts/
+Accept: application/json
+
+###
